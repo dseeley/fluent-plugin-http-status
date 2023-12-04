@@ -1,9 +1,9 @@
+require 'fluent/plugin/input'
 require "polling"
 require "net/http"
 require "net/https"
 require "uri" 
 require "socket"
-require 'fluent/plugin/input'
 
 ENV['LC_ALL'] = 'C'
 Encoding.default_external = 'ascii-8bit' if RUBY_VERSION > '1.9'
@@ -70,7 +70,7 @@ module Fluent::Plugin
           :proxy_password => @proxy_password,
           :params => @params
         }
-        router.emit(@tag, Engine.now, get_status(record,args))
+        router.emit(tag, Time.now.to_i, get_status(record,args))
         break if @end_flag
       end
     rescue TypeError => ex
