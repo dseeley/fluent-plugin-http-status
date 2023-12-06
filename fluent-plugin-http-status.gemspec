@@ -4,8 +4,8 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |gem|
   gem.name          = "fluent-plugin-http-status"
-  gem.version       = "0.0.4"
-  gem.authors       = ["hiro-su"]
+  gem.version       = "0.0.5"
+  gem.authors       = ["hiro-su", "dseeley"]
   gem.email         = ["h.sugipon@gmail.com"]
   gem.description   = %q{Fluentd input plugin for to get the http status}
   gem.summary       = %q{Fluentd input plugin for to get the http status}

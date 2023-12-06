@@ -1,16 +1,21 @@
+require 'fluent/plugin/input'
 require "polling"
 require "net/http"
 require "net/https"
 require "uri" 
 require "socket"
-require "fluent/input"
 
 ENV['LC_ALL'] = 'C'
 Encoding.default_external = 'ascii-8bit' if RUBY_VERSION > '1.9'
 
-module Fluent
+module Fluent::Plugin
   class HttpStatusInput < Input
-    Plugin.register_input('http_status',self)
+    Fluent::Plugin.register_input('http_status',self)
+
+    # To support log_level option implemented by Fluentd v0.10.43
+    unless method_defined?(:log)
+      define_method("log") { $log }
+    end
 
     # Define `router` method of v0.12 to support v0.10 or earlier
     unless method_defined?(:router)
@@ -65,7 +70,7 @@ module Fluent
           :proxy_password => @proxy_password,
           :params => @params
         }
-        router.emit(@tag, Engine.now, get_status(record,args))
+        router.emit(tag, Time.now.to_i, get_status(record,args))
         break if @end_flag
       end
     rescue TypeError => ex
@@ -147,11 +152,11 @@ module Fluent
       }
 
     rescue Timeout::Error => ex
-      $log.error "Timeout Error : #{url}:#{port}#{request_uri}"
+      log.error "Timeout Error : #{url}:#{port}#{request_uri}"
       hash["code"] = 408
       hash["message"] = ex.message
     rescue => ex
-      $log.error "#{ex.message} : #{url}:#{port}#{request_uri}"
+      log.error "#{ex.message} : #{url}:#{port}#{request_uri}"
       hash["code"] = 0
       hash["message"] = ex.message
     ensure
